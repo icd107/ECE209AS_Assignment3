@@ -27,7 +27,9 @@ namespace Oculus.Interaction.HandPosing
         [SerializeField] private HandGrabInteractor handGrab; // drag the dominant hand into this blank in the inspector
         
         [SerializeField] private GameObject cube; // drag the target cube into this blank in the inspector
-        
+
+        [SerializeField] private GameObject target;
+
         private bool isGrabbed = false; // if the object is grabbed this frame, isGrabbed is true
         private bool wasGrabbed = false; // if the object was grabbed last frame, wasGrabbed is true
         private bool isStart = false; // true when starting to grab
@@ -36,7 +38,12 @@ namespace Oculus.Interaction.HandPosing
         private float grabDistance = Mathf.Infinity; // the distance between point A to point B
         private float grabSize = Mathf.Infinity; // the size of the cube
         private float initialPos; // the initial position of the cube
+        Vector3 origin;
         private float initialTime; // the initial timestamp of user interaction (moving the cube from A to B)
+        private float occupy_volume;
+        private float occupy_percent;
+        private float ob_volume;
+
         /*
         This template script only creates one cube. To investigate Fitts' Law, 
         we need to create many more cubes of various sizes, and move them to various distances.
@@ -101,6 +108,7 @@ namespace Oculus.Interaction.HandPosing
             _writer.WriteLine(msg);
             Debug.Log(msg);
             _writer.Flush();
+            origin = new Vector3(cube.transform.position.x, cube.transform.position.y, cube.transform.position.z);
         }
 
         void Update()
@@ -109,7 +117,7 @@ namespace Oculus.Interaction.HandPosing
             if (enable == false) return;
             
             // read the cube size
-            grabSize = cube.transform.localScale.y;
+            grabSize = cube.transform.localScale.x;
 
             // read the grab status
             isGrabbed = (InteractorState.Select == handGrab.State);
@@ -118,7 +126,7 @@ namespace Oculus.Interaction.HandPosing
             // print("isStart: "+ isStart);
             isEnd = wasGrabbed && !isGrabbed;
             // print("isEnd: "+ isEnd);
-
+            ob_volume = grabSize * cube.transform.localScale.y * cube.transform.localScale.z;
             // start counting time and distance once a user grabs the cube
             if (isStart){
                 initialPos = cube.transform.position.x;
@@ -129,9 +137,23 @@ namespace Oculus.Interaction.HandPosing
                 float endPos = cube.transform.position.x;
                 grabDistance = Mathf.Abs(endPos - initialPos);
                 grabTime = Time.time - initialTime;
-                WriteToFile(grabTime, grabSize, grabDistance);
-            }   
+                occupy_volume = (cube.transform.localScale.x - Mathf.Abs(endPos - target.transform.position.x)) * target.transform.localScale.y * target.transform.localScale.z;
 
+                occupy_percent = occupy_volume / ob_volume;
+                if (occupy_percent>= 0.8)
+                {
+                    WriteToFile(grabTime, grabSize, grabDistance);
+                    cube.transform.position = origin;
+          
+                }
+                else
+                {
+                    WriteToFile(0, 0, 0);
+                    cube.transform.position = origin;
+
+                }
+            }   
+            
             wasGrabbed = isGrabbed;
             
         }

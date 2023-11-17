@@ -8,12 +8,18 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/SampleScene.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
-  - enabled: 0
+  - enabled: 1
     path: Assets/Assignment4.unity
     guid: bedb8bc4e9326894d91e3521eee12022
-  - enabled: 1
+  - enabled: 0
     path: Assets/Midterm.unity
     guid: 9f617f86345b64f4cbf7eab9ec7726f5
+  - enabled: 0
+    path: Assets/Oculus/SampleFramework/Usage/HandsInteractionTrainScene.unity
+    guid: a9c41884ef0c347628dfd8a4af4a022e
+  - enabled: 0
+    path: Assets/grabTest.unity
+    guid: 7aa6a0151dd3745eca7aea53732079ae
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: cb384f081e5d8ee46bb55f152be84068, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 74e94ecbf9250e0428f65d11859ff62a, type: 2}
