@@ -129,6 +129,16 @@ namespace Oculus.Interaction.HandPosing
                 float endPos = cube.transform.position.x;
                 grabDistance = Mathf.Abs(endPos - initialPos);
                 grabTime = Time.time - initialTime;
+                if (CheckOverlap())
+                {
+                    Debug.Log($"Time: {grabTime} seconds");
+                    ResetScene();
+                }
+                else
+                {
+                    ResetScene();
+                }
+
                 WriteToFile(grabTime, grabSize, grabDistance);
             }   
 
@@ -154,6 +164,36 @@ namespace Oculus.Interaction.HandPosing
                 System.DateTime epochStart = new System.DateTime(1970, 1, 1, 0, 0, 0, System.DateTimeKind.Utc);
                 return (System.DateTime.UtcNow - epochStart).TotalMilliseconds;
             }
+        }
+
+        // return true if the overlapping percentage >= 80%, else return false
+        private bool CheckOverlap()
+        {
+            Bounds objectBounds = cube.GetComponent<Collider>().bounds;
+            Bounds targetBounds = target.GetComponent<Collider>().bounds;
+
+            Vector3 objectExtents = objectBounds.extents;
+            Vector3 targetExtents = targetBounds.extents;
+
+            float overlapVolume = Mathf.Max(0f,
+                Mathf.Min(objectBounds.max.x, targetBounds.max.x) - Mathf.Max(objectBounds.min.x, targetBounds.min.x)) *
+                Mathf.Max(0f,
+                    Mathf.Min(objectBounds.max.y, targetBounds.max.y) - Mathf.Max(objectBounds.min.y, targetBounds.min.y)) *
+                Mathf.Max(0f,
+                    Mathf.Min(objectBounds.max.z, targetBounds.max.z) - Mathf.Max(objectBounds.min.z, targetBounds.min.z));
+
+            float objectVolume = objectExtents.x * 2 * objectExtents.y * 2 * objectExtents.z * 2;
+
+            float overlapPercentage = overlapVolume / objectVolume * 100f;
+
+            bool isOverlapping = overlapPercentage >= 80f;
+
+            return isOverlapping;
+        }
+
+        private void ResetScene()
+        {
+            cube.transform.position = new Vector3(initialPos, cube.transform.position.y, cube.transform.position.z);
         }
     
     }
