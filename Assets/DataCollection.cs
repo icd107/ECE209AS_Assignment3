@@ -138,7 +138,6 @@ namespace Oculus.Interaction.HandPosing
                 {
                     ResetScene();
                 }
-
                 WriteToFile(grabTime, grabSize, grabDistance);
             }   
 
@@ -166,12 +165,11 @@ namespace Oculus.Interaction.HandPosing
             }
         }
 
-        // return true if the overlapping percentage >= 80%, else return false
+        // return true if the overlap percentage >= 80%, else return false
         private bool CheckOverlap()
         {
             Bounds objectBounds = cube.GetComponent<Collider>().bounds;
             Bounds targetBounds = target.GetComponent<Collider>().bounds;
-
             Vector3 objectExtents = objectBounds.extents;
             Vector3 targetExtents = targetBounds.extents;
 
@@ -183,11 +181,8 @@ namespace Oculus.Interaction.HandPosing
                     Mathf.Min(objectBounds.max.z, targetBounds.max.z) - Mathf.Max(objectBounds.min.z, targetBounds.min.z));
 
             float objectVolume = objectExtents.x * 2 * objectExtents.y * 2 * objectExtents.z * 2;
-
             float overlapPercentage = overlapVolume / objectVolume * 100f;
-
             bool isOverlapping = overlapPercentage >= 80f;
-
             return isOverlapping;
         }
 
