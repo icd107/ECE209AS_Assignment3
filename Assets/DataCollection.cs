@@ -132,14 +132,10 @@ namespace Oculus.Interaction.HandPosing
                 if (CheckOverlap())
                 {
                     Debug.Log($"Time: {grabTime} seconds");
-                    ResetScene();
+                    WriteToFile(grabTime, grabSize, grabDistance);
                 }
-                else
-                {
-                    ResetScene();
-                }
-                WriteToFile(grabTime, grabSize, grabDistance);
-            }   
+                ResetScene();
+            }
 
             wasGrabbed = isGrabbed;
             
