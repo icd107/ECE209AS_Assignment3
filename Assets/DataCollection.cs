@@ -182,7 +182,7 @@ namespace Oculus.Interaction.HandPosing
 
             float objectVolume = objectExtents.x * 2 * objectExtents.y * 2 * objectExtents.z * 2;
             float overlapPercentage = overlapVolume / objectVolume * 100f;
-            bool isOverlapping = overlapPercentage >= 80f;
+            bool isOverlapping = overlapPercentage > 80f;
             return isOverlapping;
         }
 
