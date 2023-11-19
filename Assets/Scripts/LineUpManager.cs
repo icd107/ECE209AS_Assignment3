@@ -8,6 +8,9 @@ public class LineUpManager : MonoBehaviour
     public GameObject handR;
     public GameObject handL;
 
+    Vector3 headPosition;
+    Vector3 leftPosition;
+
     LineRenderer lineRenderer;
 
     // Start is called before the first frame update
@@ -20,18 +23,27 @@ public class LineUpManager : MonoBehaviour
         lineRenderer.startWidth = 0.01f;
         lineRenderer.endWidth = 0.01f;
         lineRenderer.positionCount = 2;
-        lineRenderer.useWorldSpace = true;   
+        lineRenderer.useWorldSpace = true;
+        updatePositions();
     }
 
     // Update is called once per frame
     void Update()
     {
-        var headPosition = headSet.transform.position;
-        var leftPosition = handL.transform.position;
+        if(handL.activeInHierarchy && !OVRInput.IsControllerConnected(OVRInput.Controller.Hands))
+        {
+            updatePositions();
+        }
+        headPosition = headSet.transform.position;
         float distance = Vector3.Distance(headPosition, leftPosition);
                         
         //For drawing line in the world space, provide the x,y,z values
         lineRenderer.SetPosition(0, headPosition); //x,y and z position of the starting point of the line
         lineRenderer.SetPosition(1, leftPosition); //x,y and z position of the end point of the line
+    }
+
+    void updatePositions()
+    {
+        leftPosition = handL.transform.position;
     }
 }
