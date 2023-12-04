@@ -13,6 +13,8 @@ namespace Oculus.Interaction.Samples
         [SerializeField] private ActiveStateSelector thumbsDownR;
         [SerializeField] private ActiveStateSelector rockR;
         [SerializeField] private ActiveStateSelector rockL;
+        [SerializeField] private ActiveStateSelector lR;
+        [SerializeField] private ActiveStateSelector lL;
 
         public GameObject lineDetector;
         public GameObject scoreBoard;
@@ -23,12 +25,17 @@ namespace Oculus.Interaction.Samples
         private bool isThumbsDownR = false;
         private bool isRockR = false;
         private bool isRockL = false;
+        private bool isLR = false;
+        private bool isLL = false;
 
         private bool isThumbsUpBefore = false;
 
         public bool isLineOn;
         private int leftScore;
         private int rightScore;
+
+        private float timeScoreBoardActivated;
+        private bool checkScoreBoardTimer;
 
         // Start is called before the first frame update
         void Start()
@@ -45,11 +52,17 @@ namespace Oculus.Interaction.Samples
             rockR.WhenUnselected += () => { isRockR = false; };
             rockL.WhenSelected += () => { isRockL = true; };
             rockL.WhenUnselected += () => { isRockL = false; };
+            lR.WhenSelected += () => { isLR = true; };
+            lR.WhenUnselected += () => { isLR = false; };
+            lL.WhenSelected += () => { isLL = true; };
+            lL.WhenUnselected += () => { isLL = false; };
 
             scoreBoard.GetComponent<CanvasGroup>().alpha = 0.0f;
             isLineOn = false;
             leftScore = 0;
             rightScore = 0;
+            checkScoreBoardTimer = false;
+            timeScoreBoardActivated = 0.0f;
 
             string scoreText = "Scoreboard!\nPlayer 1: " + leftScore + "\nPlayer 2: " + rightScore;
             scoreBoard.GetComponent<Text>().text = scoreText;
@@ -58,19 +71,32 @@ namespace Oculus.Interaction.Samples
         // Update is called once per frame
         void Update()
         {
-            // Turn on the detection
-            if (isThumbsDownL || isThumbsDownR)
+            // Turn on the line detection - use L-pose
+            if (isLL || isLR)
             {
                 lineDetector.SetActive(true);
                 isLineOn = true;
                 isThumbsUpBefore = false;
             }
 
-            // Pull up score board and update score
+            // Pull up score board and update score - use thumbs up
             if ((isThumbsUpL || isThumbsUpR) && !isThumbsUpBefore)
             {
+                timeScoreBoardActivated = Time.time;
+                checkScoreBoardTimer = true;
+
                 scoreBoard.GetComponent<CanvasGroup>().alpha = 1.0f;
 
+                string scoreText = "Scoreboard!\nLeft Player: " + leftScore + "\nRight Player: " + rightScore;
+
+                scoreBoard.GetComponent<Text>().text = scoreText;
+
+                isThumbsUpBefore = true;
+            }
+
+            // Add a point to corresponding player
+            if ((isThumbsUpL || isThumbsUpR) && ((Time.time - timeScoreBoardActivated) >= 1.0f) && checkScoreBoardTimer)
+            {
                 // Update score
                 if(isThumbsUpL) {
                     leftScore += 1;
@@ -78,12 +104,7 @@ namespace Oculus.Interaction.Samples
                 else if(isThumbsUpR) { 
                     rightScore += 1; 
                 }
-
-                string scoreText = "Scoreboard!\nLeft Player: " + leftScore + "\nRight Player: " + rightScore;
-
-                scoreBoard.GetComponent<Text>().text = scoreText;
-
-                isThumbsUpBefore = true;
+                checkScoreBoardTimer = false;
             }
 
             // Stop detection and score board
