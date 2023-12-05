@@ -1,8 +1,10 @@
 # Unity Assignment 3 and Final Project
  
-Open this project in Unity
+Open this project in Unity. These projects and files use the Meta Oculus Quest 2.
 
-The scene Midterm is where we keep the final project. Everything is encapsulated within this one scene.
+The scene Midterm is where we keep the final project. Everything is encapsulated within this one scene. Supporting scripts can be found within the Assets and Assets/Scripts folder.
+
+The scene Assignment4 is where we keep the Assignment 3 project and code.
 
 ## Final Project
 Shuffleboard Coaching Assistant
