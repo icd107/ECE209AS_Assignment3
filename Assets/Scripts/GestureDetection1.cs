@@ -34,8 +34,6 @@ namespace Oculus.Interaction.Samples
         private int leftScore;
         private int rightScore;
 
-        private float timeScoreBoardActivated;
-        private bool checkScoreBoardTimer;
 
         // Start is called before the first frame update
         void Start()
@@ -61,8 +59,6 @@ namespace Oculus.Interaction.Samples
             isLineOn = false;
             leftScore = 0;
             rightScore = 0;
-            checkScoreBoardTimer = false;
-            timeScoreBoardActivated = 0.0f;
 
             string scoreText = "Scoreboard!\nPlayer 1: " + leftScore + "\nPlayer 2: " + rightScore;
             scoreBoard.GetComponent<Text>().text = scoreText;
@@ -82,8 +78,13 @@ namespace Oculus.Interaction.Samples
             // Pull up score board and update score - use thumbs up
             if ((isThumbsUpL || isThumbsUpR) && !isThumbsUpBefore)
             {
-                timeScoreBoardActivated = Time.time;
-                checkScoreBoardTimer = true;
+                // Update score
+                if(isThumbsUpL) {
+                    leftScore += 1;
+                }
+                else if(isThumbsUpR) { 
+                    rightScore += 1; 
+                }
 
                 scoreBoard.GetComponent<CanvasGroup>().alpha = 1.0f;
 
@@ -94,21 +95,8 @@ namespace Oculus.Interaction.Samples
                 isThumbsUpBefore = true;
             }
 
-            // Add a point to corresponding player
-            if ((isThumbsUpL || isThumbsUpR) && ((Time.time - timeScoreBoardActivated) >= 1.0f) && checkScoreBoardTimer)
-            {
-                // Update score
-                if(isThumbsUpL) {
-                    leftScore += 1;
-                }
-                else if(isThumbsUpR) { 
-                    rightScore += 1; 
-                }
-                checkScoreBoardTimer = false;
-            }
-
             // Stop detection and score board
-            if (isRockR || isRockL)
+            else if ((isRockR || isRockL) && !(isThumbsUpL || isThumbsUpR))
             {
                 isLineOn = false;
                 scoreBoard.GetComponent<CanvasGroup>().alpha = 0.0f;
